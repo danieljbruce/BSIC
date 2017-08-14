@@ -18,6 +18,7 @@ var PiggyBank = contract(piggybank_artifacts);
 // For application bootstrapping, check out window.addEventListener below.
 var accounts;
 var account;
+var piggyBankAddress;
 
 window.App = {
   start: function() {
@@ -66,14 +67,7 @@ window.App = {
       self.setStatus("Error getting balance; see log.");
     });
 
-    PiggyBank.deployed().then(function(instance) {
-        return instance.getBalance.call(account, {from: account});
-    }).then(function(value) {
-        console.log(value);
-    }).catch(function(e) {
-        console.log(e);
-        self.setStatus("Error getting balance; see log.");
-    });
+    this.updatePiggyBalanceAndAddress();
   },
 
   sendCoin: function() {
@@ -95,6 +89,32 @@ window.App = {
       console.log(e);
       self.setStatus("Error sending coin; see log.");
     });
+  },
+
+  piggyDeposit: function(){
+      var value = document.getElementById("piggyAmount").value;
+      web3.eth.sendTransaction({from:web3.eth.accounts[0], to: piggyBankAddress, value:value});
+      this.updatePiggyBalanceAndAddress();
+  },
+  piggyWithdraw: function(){
+      PiggyBank.deployed().then(function(instance){
+        instance.get({from: account});
+      });
+      this.updatePiggyBalanceAndAddress();
+  },
+  updatePiggyBalanceAndAddress: function(){
+      PiggyBank.deployed().then(function(instance) {
+          piggyBankAddress = instance.address;
+          var address_element = document.getElementById("piggyAddress");
+          address_element.innerHTML = piggyBankAddress;
+          return instance.getBalance.call(account, {from: account});
+      }).then(function(value) {
+          var balance_element = document.getElementById("piggyBalance");
+          balance_element.innerHTML = value.toString();
+      }).catch(function(e) {
+          console.log(e);
+          self.setStatus("Error getting balance; see log.");
+      });
   }
 };
 
