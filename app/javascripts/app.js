@@ -92,42 +92,62 @@ window.App = {
   },
 
   piggyDeposit: function(){
-      var value = document.getElementById("piggyAmount").value;
-      web3.eth.sendTransaction({from:web3.eth.accounts[0], to: piggyBankAddress, value:value});
-      this.updatePiggyBalanceAndAddress();
+    var value = document.getElementById("piggyAmount").value;
+    web3.eth.sendTransaction({from:web3.eth.accounts[0], to: piggyBankAddress, value:value});
+    this.updatePiggyBalanceAndAddress();
   },
   piggyWithdraw: function(){
-      PiggyBank.deployed().then(function(instance){
-        instance.get({from: account});
-      });
-      this.updatePiggyBalanceAndAddress();
+    PiggyBank.deployed().then(function(instance){
+      instance.get({from: account});
+    });
+    this.updatePiggyBalanceAndAddress();
   },
   updatePiggyBalanceAndAddress: function(){
-      PiggyBank.deployed().then(function(instance) {
-          piggyBankAddress = instance.address;
-          var address_element = document.getElementById("piggyAddress");
-          address_element.innerHTML = piggyBankAddress;
-          return instance.getBalance.call(account, {from: account});
-      }).then(function(value) {
-          var balance_element = document.getElementById("piggyBalance");
-          balance_element.innerHTML = value.toString();
-      }).catch(function(e) {
-          console.log(e);
-          self.setStatus("Error getting balance; see log.");
-      });
+    PiggyBank.deployed().then(function(instance) {
+      piggyBankAddress = instance.address;
+      var address_element = document.getElementById("piggyAddress");
+      address_element.innerHTML = piggyBankAddress;
+      return instance.getBalance.call(account, {from: account});
+    }).then(function(value) {
+      var balance_element = document.getElementById("piggyBalance");
+      balance_element.innerHTML = value.toString();
+    }).catch(function(e) {
+      console.log(e);
+      self.setStatus("Error getting balance; see log.");
+    });
   }
 };
 
+function tryThis(web3) {
+  // console.log(web3.utils.toBigNumber(7));
+  var a = 159340662;
+  var a_hex = web3.toHex(a); //  result : a_hex = '0x97f5876' but the correct one is '0x097f5876'
+  console.log("Bear");
+  console.log(a_hex);
+    // Checking if Web3 has been injected by the browser (Mist/MetaMask)
+  // Javascript Console
+//   console.log("Bear");
+//   web3.eth.Contract(abi,address).methods['returnsTwoNamed(uint256,uint256)'].call(console.log);
+// //  {0: "23", 1: "This is a test", someUint: "23", someString: "This is a test"}
+//   console.log("Dog");
+//   web3.eth.Contract(abi,address).methods['returnsTwoUnnamed(uint256,uint256)'].call(console.log);
+
+}
+
 window.addEventListener('load', function() {
-  // Checking if Web3 has been injected by the browser (Mist/MetaMask)
+
+//  {0: "0", 1: "ERROR: Strings are not yet supported as return values"}
+
   if (typeof web3 !== 'undefined') {
     console.warn("Using web3 detected from external source. If you find that your accounts don't appear or you have 0 MetaCoin, ensure you've configured that source properly. If using MetaMask, see the following link. Feel free to delete this warning. :) http://truffleframework.com/tutorials/truffle-and-metamask")
     // Use Mist/MetaMask's provider
     window.web3 = new Web3(web3.currentProvider);
   } else {
-    console.warn("No web3 detected. Falling back to http://localhost:8545. You should remove this fallback when you deploy live, as it's inherently insecure. Consider switching to Metamask for development. More info here: http://truffleframework.com/tutorials/truffle-and-metamask");
+
+      console.warn("No web3 detected. Falling back to http://localhost:8545. You should remove this fallback when you deploy live, as it's inherently insecure. Consider switching to Metamask for development. More info here: http://truffleframework.com/tutorials/truffle-and-metamask");
     // fallback - use your fallback strategy (local node / hosted node + in-dapp id mgmt / fail)
     window.web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:8545"));
+    tryThis(window.web3);
   }
 
   App.start();
